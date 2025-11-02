@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#123456">
+    <title>Pixvation</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+      #fluid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100dvw;
+        height: 100dvh;
+        z-index: -1;
+      }
+      
+      .box {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      
+      .card {
+        width: 400px;
+        height: 450px;
+        margin: 3rem auto;
+        perspective: 1000px;
+      }
+
+      .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+      }
+
+      .card:hover .card-inner {
+        transform: rotateY(180deg);
+      }
+
+      .card-front,
+      .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.5rem;
+      }
+
+      .card-front {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        transition: var(--transition-medium);
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .card-back {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        transform: rotateY(180deg);
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+
+      .card-description {
+        color: var(--text-description);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .card-image {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+
+      .section {
+        scroll-margin-top: 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box"></div>
+    <canvas id="fluid"></canvas>
+    
+    <header class="header">
+      <nav class="navbar">
+        <div class="nav-brand">
+          <a href="#home" class="logo"><img style="width: 5vw;" src="public/pixvation.png" alt="" srcset="">PIXVATION</a>
+        </div>
+        
+        <div class="nav-toggle">
+          <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+
+        <div class="nav-menu">
+          <ul class="nav-list">
+            <li class="nav-item">
+              <a href="#home" class="nav-link active">Home</a>
+            </li>
+            <li class="nav-item">
+              <a href="#services" class="nav-link">Services</a>
+            </li>
+            <li class="nav-item">
+              <a href="#products" class="nav-link">Products</a>
+            </li>
+            <li class="nav-item">
+              <a href="#about" class="nav-link">About</a>
+            </li>
+            <li class="nav-item">
+              <a href="#contact" class="nav-link">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Home Section -->
+      <section id="home" class="section">
+        <div class="content">
+          <div class="hero">
+            <div class="neon-container">
+              <h1 class="neon-text">PIXVATION</h1>
+              <p class="hero-subtitle">Innovative AI Solutions for the Future</p>
+              <p class="hero-description">Transforming ideas into intelligent reality through cutting-edge artificial intelligence and innovative technology solutions.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Services Section -->
+      <section id="services" class="section">
+        <div class="content">
+          <h2>Our Services</h2>
+          <div class="features">
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <h3 class="card-title">AI Bot Development</h3>
+                  <p class="card-description">Custom AI chatbots and virtual assistants for businesses</p>
+                </div>
+                <div class="card-back">
+                  <img class="card-image" src="ai_bot.png" alt="AI Bot">
+                  <p>Intelligent conversational AI solutions</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <h3 class="card-title">AI Photobooth</h3>
+                  <p class="card-description">Interactive AI-powered photo experiences</p>
+                </div>
+                <div class="card-back">
+                  <img class="card-image" src="ai_booth.png" alt="AI Photobooth">
+                  <p>Next-generation photo technology</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <h3 class="card-title">Kinect Gaming</h3>
+                  <p class="card-description">Motion-controlled gaming experiences</p>
+                </div>
+                <div class="card-back">
+                  <img class="card-image" src="cursor.png" alt="Kinect Game">
+                  <p>Immersive motion gaming</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <h3 class="card-title">Web Development</h3>
+                  <p class="card-description">Modern, responsive web applications</p>
+                </div>
+                <div class="card-back">
+                  <img class="card-image" src="vite.svg" alt="Web Development">
+                  <p>Cutting-edge web solutions</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products Section -->
+      <section id="products" class="section">
+        <div class="content">
+          <h2>Our Products</h2>
+          <div class="features">
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <h3 class="card-title">SmartBot Pro</h3>
+                  <p class="card-description">Enterprise-grade AI assistant platform</p>
+                </div>
+                <div class="card-back">
+                  <img class="card-image" src="ai_bot.png" alt="SmartBot Pro">
+                  <p>Advanced AI for enterprise</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <h3 class="card-title">PhotoAI Studio</h3>
+                  <p class="card-description">Professional AI photo editing suite</p>
+                </div>
+                <div class="card-back">
+                  <img class="card-image" src="ai_booth.png" alt="PhotoAI Studio">
+                  <p>AI-powered photo magic</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <h3 class="card-title">GameMotion SDK</h3>
+                  <p class="card-description">Motion control development kit</p>
+                </div>
+                <div class="card-back">
+                  <img class="card-image" src="cursor.png" alt="GameMotion SDK">
+                  <p>Build motion games easily</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-inner">
+                <div class="card-front">
+                  <h3 class="card-title">WebFlow Pro</h3>
+                  <p class="card-description">No-code web development platform</p>
+                </div>
+                <div class="card-back">
+                  <img class="card-image" src="vite.svg" alt="WebFlow Pro">
+                  <p>Build websites without coding</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section id="about" class="section">
+        <div class="content">
+          <h2>About Pixvation</h2>
+          <div class="about-content">
+            <div class="about-text">
+              <h3>Our Story</h3>
+              <p>Founded in 2023, Pixvation emerged from a vision to democratize artificial intelligence and make cutting-edge technology accessible to businesses of all sizes. Our team of passionate engineers, designers, and AI researchers work together to create innovative solutions that solve real-world problems.</p>
+              
+              <h3>Our Mission</h3>
+              <p>To empower businesses with intelligent AI solutions that drive growth, enhance customer experiences, and streamline operations. We believe that AI should be accessible, ethical, and beneficial to humanity.</p>
+              
+              <h3>Core Values</h3>
+              <ul>
+                <li><strong>Innovation:</strong> Pushing the boundaries of what's possible</li>
+                <li><strong>Quality:</strong> Delivering excellence in every project</li>
+                <li><strong>Integrity:</strong> Building trust through transparency</li>
+                <li><strong>Collaboration:</strong> Working together to achieve greatness</li>
+              </ul>
+            </div>
+            
+            <div class="about-stats">
+              <div class="stat-item">
+                <h4>50+</h4>
+                <p>Projects Completed</p>
+              </div>
+              <div class="stat-item">
+                <h4>25+</h4>
+                <p>Happy Clients</p>
+              </div>
+              <div class="stat-item">
+                <h4>3+</h4>
+                <p>Years Experience</p>
+              </div>
+              <div class="stat-item">
+                <h4>99%</h4>
+                <p>Client Satisfaction</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section id="contact" class="section">
+        <div class="content">
+          <div class="contact-container">
+            <div class="contact-info">
+              <h2>Get in Touch</h2>
+              <p class="contact-description">Ready to transform your business with AI? Let's discuss how we can help you achieve your goals.</p>
+              
+              <div class="contact-details">
+                <div class="contact-item">
+                  <h4>📍 Location</h4>
+                  <p>Mumbai, Maharashtra, India</p>
+                </div>
+                <div class="contact-item">
+                  <h4>📧 Email</h4>
+                  <p>info@pixvation.com</p>
+                </div>
+                <div class="contact-item">
+                  <h4>📱 Phone</h4>
+                  <p>+91-98765-43210</p>
+                </div>
+                <div class="contact-item">
+                  <h4>⏰ Hours</h4>
+                  <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="contact-form">
+              <form class="form-box">
+                <div class="form-group">
+                  <input class="input" type="text" name="firstName" placeholder="First Name" required>
+                </div>
+                <div class="form-group">
+                  <input class="input" type="text" name="lastName" placeholder="Last Name" required>
+                </div>
+                <div class="form-group">
+                  <input class="input" type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                  <input class="input" type="tel" name="phone" placeholder="Phone Number">
+                </div>
+                <div class="form-group">
+                  <textarea class="textinput" name="message" placeholder="Tell us about your project..." required></textarea>
+                </div>
+                <button type="submit" class="send">Send Message</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-content">
+        <div class="footer-section about">
+          <h3>Pixvation</h3>
+          <p>Innovative AI Solutions for the Future</p>
+          <p>Transforming businesses through intelligent technology solutions.</p>
+        </div>
+        <div class="footer-section links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#products">Products</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section services">
+          <h4>Our Services</h4>
+          <ul>
+            <li>AI Bot Development</li>
+            <li>AI Photobooth</li>
+            <li>Kinect Gaming</li>
+            <li>Web Development</li>
+          </ul>
+        </div>
+        <div class="footer-section contact">
+          <h4>Contact Us</h4>
+          <p>📍 Mumbai, Maharashtra, India</p>
+          <p>📧 info@pixvation.com</p>
+          <p>📱 +91-98765-43210</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Pixvation. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+    <script src="/src/navbar.js"></script>
+    <script src="/src/hoverbgeffec.js"></script>
+  </body>
+</html>
