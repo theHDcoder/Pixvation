@@ -1,417 +1,578 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#123456">
-    <title>Pixvation</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <style>
-      #fluid {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100dvw;
-        height: 100dvh;
-        z-index: -1;
-      }
-      
-      .box {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      }
-      
-      .card {
-        width: 400px;
-        height: 450px;
-        margin: 3rem auto;
-        perspective: 1000px;
-      }
+<html lang="en" style="scroll-behavior: smooth;">
 
-      .card-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        transition: transform 0.6s;
-        transform-style: preserve-3d;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/fav.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a0a12">
+  <meta name="description" content="Pixvation - Innovative Solutions.">
+  <meta name="keywords"
+    content="AI, Artificial Intelligence, AI Solutions, AI Bot Development, AI Photobooth, Kinect Gaming, Web Development">
+  <meta name="author" content="Pixvation">
+  <title>Pixvation - Innovative Solutions</title>
 
-      .card:hover .card-inner {
-        transform: rotateY(180deg);
-      }
+  <!-- Performance optimizations -->
+  <link rel="dns-prefetch" href="//ajax.googleapis.com">
+  <link rel="dns-prefetch" href="//unpkg.com">
+  <link rel="preconnect" href="https://ajax.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
 
-      .card-front,
-      .card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        backface-visibility: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 0.5rem;
-      }
+  <!-- Critical CSS for above-the-fold content -->
 
-      .card-front {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        padding: 2rem;
-        transition: var(--transition-medium);
-        flex-direction: column;
-        text-align: center;
-      }
 
-      .card-back {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
-        padding: 2rem;
-        transform: rotateY(180deg);
-        flex-direction: column;
-        text-align: center;
-      }
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/pixvation_logo.png" as="image" type="image/png">
+  <link rel="preload" href="/selected_1.mp4" as="video" type="video/mp4">
+  <link rel="preload" href="/PixelGame.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="/Pixel Game Extrude.otf" as="font" type="font/otf" crossorigin>
 
-      .card-title {
-        font-size: 1.5rem;
-        color: var(--primary-color);
-        margin-bottom: 1rem;
-        font-weight: 600;
-      }
+  <!-- Load main CSS with preload hint -->
+  <noscript>
+  </noscript>
 
-      .card-description {
-        color: var(--text-description);
-        line-height: 1.6;
-        margin-bottom: 1rem;
-      }
+  <!-- Register Service Worker for caching -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('[SW] Registered:', registration.scope);
 
-      .card-image {
-        width: 100%;
-        height: auto;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-      }
+            // Handle updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New content available, show update prompt
+                  showUpdateNotification();
+                }
+              });
+            });
+          })
+          .catch(error => {
+            console.log('[SW] Registration failed:', error);
+          });
+      });
+    }
 
-      .section {
-        scroll-margin-top: 100px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="box"></div>
-    <canvas id="fluid"></canvas>
-    
-    <header class="header">
-      <nav class="navbar">
-        <div class="nav-brand">
-          <a href="#home" class="logo"><img style="width: 5vw;" src="public/pixvation.png" alt="" srcset="">PIXVATION</a>
+    function showUpdateNotification() {
+      // Create update notification
+      const notification = document.createElement('div');
+      notification.className = 'update-notification';
+      notification.innerHTML = `
+        <div class="update-content">
+          <p>🚀 New version available!</p>
+          <button onclick="location.reload()">Update Now</button>
         </div>
-        
-        <div class="nav-toggle">
-          <div class="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
+      `;
+      document.body.appendChild(notification);
 
-        <div class="nav-menu">
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a href="#home" class="nav-link active">Home</a>
-            </li>
-            <li class="nav-item">
-              <a href="#services" class="nav-link">Services</a>
-            </li>
-            <li class="nav-item">
-              <a href="#products" class="nav-link">Products</a>
-            </li>
-            <li class="nav-item">
-              <a href="#about" class="nav-link">About</a>
-            </li>
-            <li class="nav-item">
-              <a href="#contact" class="nav-link">Contact</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
+      setTimeout(() => notification.remove(), 10000);
+    }
+  </script>
 
-    <main>
-      <!-- Home Section -->
-      <section id="home" class="section">
-        <div class="content">
-          <div class="hero">
-            <div class="neon-container">
-              <h1 class="neon-text">PIXVATION</h1>
-              <p class="hero-subtitle">Innovative AI Solutions for the Future</p>
-              <p class="hero-description">Transforming ideas into intelligent reality through cutting-edge artificial intelligence and innovative technology solutions.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+  <!-- Critical CSS loaded immediately -->
 
-      <!-- Services Section -->
-      <section id="services" class="section">
-        <div class="content">
-          <h2>Our Services</h2>
-          <div class="features">
-            <div class="card">
-              <div class="card-inner">
-                <div class="card-front">
-                  <h3 class="card-title">AI Bot Development</h3>
-                  <p class="card-description">Custom AI chatbots and virtual assistants for businesses</p>
-                </div>
-                <div class="card-back">
-                  <img class="card-image" src="ai_bot.png" alt="AI Bot">
-                  <p>Intelligent conversational AI solutions</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card">
-              <div class="card-inner">
-                <div class="card-front">
-                  <h3 class="card-title">AI Photobooth</h3>
-                  <p class="card-description">Interactive AI-powered photo experiences</p>
-                </div>
-                <div class="card-back">
-                  <img class="card-image" src="ai_booth.png" alt="AI Photobooth">
-                  <p>Next-generation photo technology</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card">
-              <div class="card-inner">
-                <div class="card-front">
-                  <h3 class="card-title">Kinect Gaming</h3>
-                  <p class="card-description">Motion-controlled gaming experiences</p>
-                </div>
-                <div class="card-back">
-                  <img class="card-image" src="cursor.png" alt="Kinect Game">
-                  <p>Immersive motion gaming</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card">
-              <div class="card-inner">
-                <div class="card-front">
-                  <h3 class="card-title">Web Development</h3>
-                  <p class="card-description">Modern, responsive web applications</p>
-                </div>
-                <div class="card-back">
-                  <img class="card-image" src="vite.svg" alt="Web Development">
-                  <p>Cutting-edge web solutions</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+  <!-- Preload remaining resources -->
 
-      <!-- Products Section -->
-      <section id="products" class="section">
-        <div class="content">
-          <h2>Our Products</h2>
-          <div class="features">
-            <div class="card">
-              <div class="card-inner">
-                <div class="card-front">
-                  <h3 class="card-title">SmartBot Pro</h3>
-                  <p class="card-description">Enterprise-grade AI assistant platform</p>
-                </div>
-                <div class="card-back">
-                  <img class="card-image" src="ai_bot.png" alt="SmartBot Pro">
-                  <p>Advanced AI for enterprise</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card">
-              <div class="card-inner">
-                <div class="card-front">
-                  <h3 class="card-title">PhotoAI Studio</h3>
-                  <p class="card-description">Professional AI photo editing suite</p>
-                </div>
-                <div class="card-back">
-                  <img class="card-image" src="ai_booth.png" alt="PhotoAI Studio">
-                  <p>AI-powered photo magic</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card">
-              <div class="card-inner">
-                <div class="card-front">
-                  <h3 class="card-title">GameMotion SDK</h3>
-                  <p class="card-description">Motion control development kit</p>
-                </div>
-                <div class="card-back">
-                  <img class="card-image" src="cursor.png" alt="GameMotion SDK">
-                  <p>Build motion games easily</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card">
-              <div class="card-inner">
-                <div class="card-front">
-                  <h3 class="card-title">WebFlow Pro</h3>
-                  <p class="card-description">No-code web development platform</p>
-                </div>
-                <div class="card-back">
-                  <img class="card-image" src="vite.svg" alt="WebFlow Pro">
-                  <p>Build websites without coding</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <!-- About Section -->
-      <section id="about" class="section">
-        <div class="content">
-          <h2>About Pixvation</h2>
-          <div class="about-content">
-            <div class="about-text">
-              <h3>Our Story</h3>
-              <p>Founded in 2023, Pixvation emerged from a vision to democratize artificial intelligence and make cutting-edge technology accessible to businesses of all sizes. Our team of passionate engineers, designers, and AI researchers work together to create innovative solutions that solve real-world problems.</p>
-              
-              <h3>Our Mission</h3>
-              <p>To empower businesses with intelligent AI solutions that drive growth, enhance customer experiences, and streamline operations. We believe that AI should be accessible, ethical, and beneficial to humanity.</p>
-              
-              <h3>Core Values</h3>
-              <ul>
-                <li><strong>Innovation:</strong> Pushing the boundaries of what's possible</li>
-                <li><strong>Quality:</strong> Delivering excellence in every project</li>
-                <li><strong>Integrity:</strong> Building trust through transparency</li>
-                <li><strong>Collaboration:</strong> Working together to achieve greatness</li>
-              </ul>
-            </div>
-            
-            <div class="about-stats">
-              <div class="stat-item">
-                <h4>50+</h4>
-                <p>Projects Completed</p>
-              </div>
-              <div class="stat-item">
-                <h4>25+</h4>
-                <p>Happy Clients</p>
-              </div>
-              <div class="stat-item">
-                <h4>3+</h4>
-                <p>Years Experience</p>
-              </div>
-              <div class="stat-item">
-                <h4>99%</h4>
-                <p>Client Satisfaction</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <!-- Contact Section -->
-      <section id="contact" class="section">
-        <div class="content">
-          <div class="contact-container">
-            <div class="contact-info">
-              <h2>Get in Touch</h2>
-              <p class="contact-description">Ready to transform your business with AI? Let's discuss how we can help you achieve your goals.</p>
-              
-              <div class="contact-details">
-                <div class="contact-item">
-                  <h4>📍 Location</h4>
-                  <p>Mumbai, Maharashtra, India</p>
-                </div>
-                <div class="contact-item">
-                  <h4>📧 Email</h4>
-                  <p>info@pixvation.com</p>
-                </div>
-                <div class="contact-item">
-                  <h4>📱 Phone</h4>
-                  <p>+91-98765-43210</p>
-                </div>
-                <div class="contact-item">
-                  <h4>⏰ Hours</h4>
-                  <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
-                </div>
-              </div>
-            </div>
-            
-            <div class="contact-form">
-              <form class="form-box">
-                <div class="form-group">
-                  <input class="input" type="text" name="firstName" placeholder="First Name" required>
-                </div>
-                <div class="form-group">
-                  <input class="input" type="text" name="lastName" placeholder="Last Name" required>
-                </div>
-                <div class="form-group">
-                  <input class="input" type="email" name="email" placeholder="Email Address" required>
-                </div>
-                <div class="form-group">
-                  <input class="input" type="tel" name="phone" placeholder="Phone Number">
-                </div>
-                <div class="form-group">
-                  <textarea class="textinput" name="message" placeholder="Tell us about your project..." required></textarea>
-                </div>
-                <button type="submit" class="send">Send Message</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+  <!-- Defer non-critical scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
+  <script src="https://unpkg.com/cursor-effects@latest/dist/browser.js" defer></script>
 
-    <footer class="site-footer">
-      <div class="footer-content">
-        <div class="footer-section about">
-          <h3>Pixvation</h3>
-          <p>Innovative AI Solutions for the Future</p>
-          <p>Transforming businesses through intelligent technology solutions.</p>
+  <script type="module" crossorigin src="/assets/index-DTaAO2Eq.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-D6ldrc_5.css">
+</head>
+
+<body>
+  <div id="pixel-trail-root"></div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+      <div class="loading-logo">
+        <img src="/pixvation_logo.png" alt="Pixvation Logo" class="loading-logo-img">
+        <h1 class="loading-title">PIXVATION</h1>
+      </div>
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+      </div>
+      <div class="loading-text">
+        <p>Loading innovative solutions... 0%</p>
+        <div class="loading-progress">
+          <div class="progress-bar"></div>
         </div>
-        <div class="footer-section links">
-          <h4>Quick Links</h4>
-          <ul>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#products">Products</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
-        </div>
-        <div class="footer-section services">
-          <h4>Our Services</h4>
-          <ul>
-            <li>AI Bot Development</li>
-            <li>AI Photobooth</li>
-            <li>Kinect Gaming</li>
-            <li>Web Development</li>
-          </ul>
-        </div>
-        <div class="footer-section contact">
-          <h4>Contact Us</h4>
-          <p>📍 Mumbai, Maharashtra, India</p>
-          <p>📧 info@pixvation.com</p>
-          <p>📱 +91-98765-43210</p>
+        <p class="loading-subtitle">Caching assets for faster future visits</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="box"></div>
+  <canvas id="fluid"></canvas>
+
+  <header class="header">
+    <nav class="navbar">
+      <div class="nav-brand">
+        <a href="#home" class="logo">
+          <img src="/pix_hz.png" alt="Pixvation Logo" class="nav-logo">
+        </a>
+      </div>
+
+      <div class="nav-toggle">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 Pixvation. All rights reserved.</p>
-      </div>
-    </footer>
 
-    <script type="module" src="/src/main.js"></script>
-    <script src="/src/navbar.js"></script>
-    <script src="/src/hoverbgeffec.js"></script>
-  </body>
+      <div class="nav-menu">
+        <ul class="nav-list" style="font-size: 1.7rem;">
+          <li class="nav-item">
+            <a href="#home" class="nav-link active">Home</a>
+          </li>
+          <li class="nav-item">
+            <a href="#services" class="nav-link">Services</a>
+          </li>
+          <li class="nav-item">
+            <a href="#products" class="nav-link">Products</a>
+          </li>
+          <li class="nav-item">
+            <a href="#about" class="nav-link">About</a>
+          </li>
+          <li class="nav-item">
+            <a href="#contact" class="nav-link">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Home Section -->
+    <section id="home" class="section">
+      <div class="content">
+        <div class="hero">
+          <div class="hero-video-container">
+            <video class="hero-video" src="/selected_1.mp4" autoplay muted loop playsinline></video>
+          </div>
+          <div class="hero-overlay">
+            <h2 class="hero-overlay-text">We Provide Innovative Solutions</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section">
+      <div class="content">
+        <h2>Our Services</h2>
+        <div class="features">
+          <div class="card" data-service="true">
+            <div class="card-inner">
+              <div class="card-front">
+                <h3 class="card-title">Photobooths</h3>
+              </div>
+              <div class="card-back">
+                <video class="card-video lazy-video" data-src="photobooths.mp4" autoplay muted loop playsinline
+                  preload="none">
+                  <source type="video/mp4">
+                </video>
+                <div class="card-click-overlay">Click here</div>
+                <div class="video-loading-placeholder">
+                  <div class="video-spinner"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card" data-service="true">
+            <div class="card-inner">
+              <div class="card-front">
+                <h3 class="card-title">AI Projects</h3>
+              </div>
+              <div class="card-back">
+                <video class="card-video lazy-video" data-src="aiservice.mp4" autoplay muted loop playsinline
+                  preload="none">
+                  <source type="video/mp4">
+                </video>
+                <div class="card-click-overlay">Click here</div>
+                <div class="video-loading-placeholder">
+                  <div class="video-spinner"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card" data-service="true">
+            <div class="card-inner">
+              <div class="card-front">
+                <h3 class="card-title">VR/AR/XR Development</h3>
+              </div>
+              <div class="card-back">
+                <video class="card-video lazy-video" data-src="arvrxr.mp4" autoplay muted loop playsinline
+                  preload="none">
+                  <source type="video/mp4">
+                </video>
+                <div class="card-click-overlay">Click here</div>
+                <div class="video-loading-placeholder">
+                  <div class="video-spinner"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" data-service="true">
+            <div class="card-inner">
+              <div class="card-front">
+                <h3 class="card-title">IOT Projects</h3>
+              </div>
+              <div class="card-back">
+                <video class="card-video lazy-video" data-src="iotservice.mp4" autoplay muted loop playsinline
+                  preload="none">
+                  <source type="video/mp4">
+                </video>
+                <div class="card-click-overlay">Click here</div>
+                <div class="video-loading-placeholder">
+                  <div class="video-spinner"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" data-service="true">
+            <div class="card-inner">
+              <div class="card-front">
+                <h3 class="card-title">APP/Web Development</h3>
+              </div>
+              <div class="card-back">
+                <video class="card-video lazy-video" data-src="appservice.mp4" autoplay muted loop playsinline
+                  preload="none">
+                  <source type="video/mp4">
+                </video>
+                <div class="card-click-overlay">Click here</div>
+                <div class="video-loading-placeholder">
+                  <div class="video-spinner"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" data-service="true">
+            <div class="card-inner">
+              <div class="card-front">
+                <h3 class="card-title">Others</h3>
+              </div>
+              <div class="card-back">
+                <video class="card-video lazy-video" data-src="otherservice.mp4" autoplay muted loop playsinline
+                  preload="none">
+                  <source type="video/mp4">
+                </video>
+                <div class="card-click-overlay">Click here</div>
+                <div class="video-loading-placeholder">
+                  <div class="video-spinner"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="section">
+      <div class="content">
+        <h2>Our Products</h2>
+        <div class="products-container">
+          <div class="products-grid" id="productsGrid">
+            <!-- Products will be loaded dynamically from Google Sheets -->
+          </div>
+          <div class="products-pagination" id="productsPagination">
+            <!-- Pagination buttons will be generated by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+      <div class="content">
+        <h2>About Pixvation</h2>
+        <div class="about-content">
+          <div class="about-text">
+            <p>We are a customer-centric company committed to delivering reliable, innovative, and high-quality
+              solutions. Our focus is on understanding client needs and providing practical, efficient, and scalable
+              services that drive real value. With a strong emphasis on quality, transparency, and continuous
+              improvement, we aim to build long-term partnerships based on trust and performance.</p>
+
+
+            <h3>Our Mission</h3>
+            <p>To deliver innovative, reliable, and user-centric digital solutions that help businesses streamline
+              processes, enhance engagement, and achieve sustainable growth through technology.</p>
+            <h3>Vision</h3>
+            <p>To become a trusted technology partner known for innovation, quality, and impactful solutions that
+              transform ideas into meaningful digital experiences.
+
+
+          </div>
+
+          <div class="about-stats">
+            <div class="stat-item">
+              <h4>50+</h4>
+              <p>Projects Completed</p>
+            </div>
+            <div class="stat-item">
+              <h4>25+</h4>
+              <p>Happy Clients</p>
+            </div>
+            <div class="stat-item">
+              <h4>3+</h4>
+              <p>Years Experience</p>
+            </div>
+            <div class="stat-item">
+              <h4>100%</h4>
+              <p>Client Satisfaction</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+      <div class="content">
+        <h2>Get in Touch</h2>
+        <div class="contact-container">
+          <div class="contact-info">
+
+            <div class="contact-details">
+              <div class="contact-item">
+                <h4>📍 Location</h4>
+                <p>Chennai, Tamil Nadu, India</p>
+              </div>
+              <div class="contact-item">
+                <h4>📧 Email</h4>
+                <p>hello@pixvation.com</p>
+              </div>
+              <div class="contact-item">
+                <h4>📱 Phone</h4>
+                <p>+91-98765-43210</p>
+              </div>
+              <div class="contact-item">
+                <h4>⏰ Hours</h4>
+                <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-form">
+            <form class="form-box" id="contactForm">
+              <div class="form-group">
+                <input class="input" type="text" id="name" name="name" placeholder="Full Name" required>
+              </div>
+              <div class="form-group">
+                <input class="input" type="email" id="email" name="email" placeholder="Email Address" required>
+              </div>
+              <div class="form-group">
+                <input class="input" type="tel" id="phone" name="phone" placeholder="Phone Number">
+              </div>
+              <div class="form-group">
+                <textarea class="textinput" id="query" name="query" placeholder="Tell us about your project..."
+                  required></textarea>
+              </div>
+              <button type="submit" class="send">Send Message</button>
+              <div id="formStatus" class="form-status"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-section about">
+        <h3>Pixvation</h3>
+        <p>Innovative AI Solutions for the Future</p>
+        <p>Transforming businesses through intelligent technology solutions.</p>
+      </div>
+      <div class="footer-section links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#products">Products</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-section services">
+        <h4>Our Services</h4>
+        <ul>
+          <li>AI Bot Development</li>
+          <li>AI Photobooth</li>
+          <li>Kinect Gaming</li>
+          <li>Web Development</li>
+        </ul>
+      </div>
+      <div class="footer-section contact">
+        <h4>Contact Us</h4>
+        <p>📍 Chennai, Tamil Nadu, India</p>
+        <p>📧 hello@pixvation.com</p>
+        <p>📱 +91-98765-43210</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Pixvation. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Defer main application scripts -->
+  <script src="/assets/navbar.js" defer></script>
+
+  <!-- Fallback for browsers without module support -->
+  <script nomodule>
+    console.warn('This browser does not support ES modules. Some features may not work properly.');
+    // Load a basic fallback version if needed
+  </script>
+  <script>
+
+
+    /* Products Grid Pagination */
+    function initializePagination() {
+      console.log('initializePagination called');
+      const productsGrid = document.getElementById('productsGrid');
+      const paginationContainer = document.getElementById('productsPagination');
+
+      if (!productsGrid || !paginationContainer) return;
+
+      let currentPage = 1;
+
+      function getItemsPerPage() {
+        const width = window.innerWidth;
+        let items = 4;
+        if (width <= 576) items = 1;
+        else if (width <= 768) items = 2;
+        else if (width <= 968) items = 3;
+        console.log(`getItemsPerPage: width=${width}, items=${items}`);
+        return items;
+      }
+
+      window.showPage = function (page, scrollToTop = false) {
+        console.log(`showPage called: page=${page}, scrollToTop=${scrollToTop}`);
+        const cards = Array.from(productsGrid.querySelectorAll('.card')); // Moved here
+        console.log('showPage - cards found:', cards.length);
+        const itemsPerPage = getItemsPerPage();
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+
+        productsGrid.classList.add('loading');
+
+        cards.forEach((card, index) => {
+          if (index >= start && index < end) {
+            card.style.display = 'block';
+            card.style.animation = 'fadeInUp 0.4s ease forwards';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        productsGrid.classList.remove('loading');
+        currentPage = page;
+        renderPagination();
+
+        // Only scroll to top if explicitly requested (for user-initiated pagination)
+        if (scrollToTop) {
+          productsGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
+      function renderPagination() {
+        console.log('renderPagination called');
+        const cards = Array.from(productsGrid.querySelectorAll('.card')); // Added here for getTotalPages
+        console.log('renderPagination - cards found:', cards.length);
+        const totalPages = Math.ceil(cards.length / getItemsPerPage()); // Recalculate based on updated cards
+        console.log(`renderPagination - totalPages: ${totalPages}, currentPage: ${currentPage}`);
+        if (totalPages <= 1) {
+          paginationContainer.innerHTML = '';
+          console.log('renderPagination - totalPages <= 1, hiding pagination');
+          return;
+        }
+
+        let html = '';
+        const maxVisible = 5; // Maximum number of page buttons to show
+
+        // Previous button
+        html += `<button class="pagination-btn" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>`;
+
+        if (totalPages <= maxVisible) {
+          // Show all pages if total is less than maxVisible
+          for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+          }
+        } else {
+          // Show first page
+          html += `<button class="pagination-btn ${1 === currentPage ? 'active' : ''}" data-page="1">1</button>`;
+
+          if (currentPage > 3) {
+            html += `<span class="pagination-ellipsis">...</span>`;
+          }
+
+          // Show pages around current page
+          const start = Math.max(2, currentPage - 1);
+          const end = Math.min(totalPages - 1, currentPage + 1);
+
+          for (let i = start; i <= end; i++) {
+            if (i !== 1 && i !== totalPages) {
+              html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+          }
+
+          if (currentPage < totalPages - 2) {
+            html += `<span class="pagination-ellipsis">...</span>`;
+          }
+
+          // Show last page
+          html += `<button class="pagination-btn ${totalPages === currentPage ? 'active' : ''}" data-page="${totalPages}">${totalPages}</button>`;
+        }
+
+        // Next button
+        html += `<button class="pagination-btn" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>`;
+
+        paginationContainer.innerHTML = html;
+
+        // Add event listeners
+        paginationContainer.querySelectorAll('.pagination-btn:not(:disabled)').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const page = parseInt(btn.dataset.page);
+            if (page && page !== currentPage) {
+              showPage(page, true); // Scroll to top for user-initiated pagination
+            }
+          });
+        });
+      }
+
+      // Handle window resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          // Reset to first page on resize without scrolling
+        }, 250);
+      });
+
+      // Initial call to show the first page
+    }
+  </script>
+</body>
+
 </html>
